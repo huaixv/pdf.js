@@ -233,6 +233,12 @@
       "description": "The color is a string as defined in CSS. Its goal is to help improve readability in high contrast mode",
       "type": "string",
       "default": "CanvasText"
+    },
+    "preferEmbedMode": {
+      "title": "Prefer keeping URLs in the address bar unchanged",
+      "description": "Prefer keeping URLs in the address bar unchanged",
+      "type": "boolean",
+      "default": true
     }
   }
 }
