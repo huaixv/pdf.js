@@ -1,5 +1,32 @@
 "use strict";
 (function () {
+  (function () {
+    try {
+      if (window.localStorage) { return; }
+    } catch (e) {}
+    const { ChromeCom } = require("./chromecom.js");
+    const BG = chrome.extension.getBackgroundPage();
+    let newLocalStorage = BG && BG.localStorage, newSessionStorage = BG && BG.sessionStorage;
+    if (!newLocalStorage) {
+      const getItem = function (key) {
+        return new Promise(resolve => {
+          ChromeCom.request("getStorageItem", { persistent: this.persistent, key }, resolve);
+        });
+      }
+      const setItem = function (key, value) {
+        ChromeCom.request("setStorageItem", { persistent: this.persistent, key, value });
+      }
+      newLocalStorage = { getItem, setItem, persistent: true };
+      newSessionStorage = { getItem, setItem, persistent: false };
+    }
+    try {
+      override("localStorage", newLocalStorage);
+      newSessionStorage && override("sessionStorage", newSessionStorage);
+    } catch (e) {}
+    function override(name, value) {
+      Object.defineProperty(window, name, { get: () => value });
+    }
+  })();
   var VimiumCHandler = function(code) {
     if (code !== 2) {
       if (code === 3) {
@@ -46,13 +73,13 @@
     }
   }
 
-  var injectorURL = localStorage.targetExtensionInjector;
+  var doInject = function (injectorURL) {
   if (injectorURL === "nul" || injectorURL === "/dev/null") { return; }
   if (!injectorURL) {
     injectorURL = /\sEdg\//.test(navigator.appVersion) ? "aibcglbfblnogfjhbcmmpobjhnomhcdo"
         : "hfjbmagddngcpeloejdejnfgbamkjaeg";
     injectorURL = "chrome-extension://" + injectorURL + "/lib/injector.js";
-    localStorage.targetExtensionInjector = injectorURL;
+    localStorage.setItem("targetExtensionInjector", injectorURL);
   }
   var script = document.createElement("script");
   script.src = injectorURL;
@@ -66,4 +93,11 @@
     return !!injector
   };
   document.head.appendChild(script);
+  };
+  var injectorPromise = localStorage.getItem("targetExtensionInjector");
+  if (injectorPromise instanceof Promise) {
+    injectorPromise.then(doInject);
+  } else {
+    doInject(injectorPromise);
+  }
 })()
