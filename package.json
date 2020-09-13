@@ -14,17 +14,6 @@
     "core-js": "^3.30.2",
     "cross-env": "^7.0.3",
     "es-module-shims": "1.4.7",
-    "eslint": "^8.41.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-fetch-options": "^0.0.5",
-    "eslint-plugin-html": "^7.1.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-json": "^3.1.0",
-    "eslint-plugin-mozilla": "^3.1.0",
-    "eslint-plugin-no-unsanitized": "^4.0.2",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-sort-exports": "^0.8.0",
-    "eslint-plugin-unicorn": "^47.0.0",
     "globals": "^13.20.0",
     "gulp": "^4.0.2",
     "gulp-postcss": "^9.0.1",
@@ -41,7 +30,6 @@
     "postcss": "^8.4.23",
     "postcss-dir-pseudo-class": "^7.0.2",
     "prettier": "^2.8.8",
-    "puppeteer": "^20.4.0",
     "rimraf": "^3.0.2",
     "streamqueue": "^1.1.2",
     "stylelint": "^15.6.2",
@@ -59,7 +47,6 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "postinstall": "cross-env PUPPETEER_PRODUCT=firefox node node_modules/puppeteer/install.js"
   },
   "repository": {
     "type": "git",
