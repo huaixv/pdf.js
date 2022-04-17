@@ -9,7 +9,7 @@
     "48": "icon48.png",
     "16": "icon16.png"
   },
-  "minimum_chrome_version": "41",
+  "minimum_chrome_version": "73",
   "permissions": [
     "fileBrowserHandler",
     "webRequest", "webRequestBlocking",
