@@ -144,12 +144,6 @@
       "type": "boolean",
       "default": false
     },
-    "disableTelemetry": {
-      "title": "Disable telemetry",
-      "type": "boolean",
-      "description": "Whether to prevent the extension from reporting the extension and browser version to the extension developers.",
-      "default": false
-    },
     "annotationMode": {
       "type": "integer",
       "enum": [
@@ -236,7 +230,7 @@
     },
     "preferEmbedMode": {
       "title": "Prefer keeping URLs in the address bar unchanged",
-      "description": "Prefer keeping URLs in the address bar unchanged",
+      "description": "Experimental: If you can not visit some online PDF files, please try disabling this.",
       "type": "boolean",
       "default": true
     }
