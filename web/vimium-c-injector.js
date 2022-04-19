@@ -75,17 +75,37 @@
     var a = event.relatedTarget, str = a && a.textContent, box = a && document.getElementById("viewerContainer");
     event.stopImmediatePropagation();
     if (!box) { return; }
-    if (!str) { // generate a mark
-      a.textContent = [box.scrollLeft, box.scrollTop];
+
+    var app = PDFViewerApplication;
+    var history = app.pdfHistory;
+
+    if (!str) {
+      const hash = history && history._position && history._position.hash;
+      a.textContent = [box.scrollLeft, box.scrollTop, hash && "#" + hash.replace(/^#/, "") || null];
       return;
-    } else { // goto a mark
-      var mark = str.split(",");
-      mark = [~~mark[0], ~~mark[1]];
-      if (mark[0] > 0 || mark[1] > 0) {
-        box.scrollTo(mark[0], mark[1]);
-        a.textContent = "";
-        event.preventDefault();
+    }
+    const mark = str.split(",");
+    const x = ~~mark[0] - box.scrollLeft, y = ~~mark[1] - box.scrollTop
+    const hash = (mark.slice(2).join(",") || "").replace(/^#/, "").split("#")[0];
+    const dest = hash.includes("page=") ? new URLSearchParams(hash) : null;
+    const page = dest && +dest.get("page") || -1;
+    if (history && page >= 0) {
+      app.pdfLinkService.setHash(hash);
+    } else {
+      if (x || y) {
+        const zoom = dest ? dest.get("zoom") : "";
+        zoom && app.pdfViewer && (app.pdfViewer.currentScaleValue = zoom);
+        box.scrollTo(x, y);
       }
+      page >= 0 && typeof app.page === "number" && setTimeout(function() {
+        if (app.page !== page) {
+          app.page = page;
+        }
+      }, 0)
+    }
+    if (x || y || page >= 0) {
+      a.textContent = "";
+      event.preventDefault();
     }
   }
 
