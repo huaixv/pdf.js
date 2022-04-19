@@ -77,25 +77,26 @@
     if (!box) { return; }
 
     var app = PDFViewerApplication;
-    var history = app.pdfHistory;
+    var pdfLoc = app.pdfViewer && app.pdfViewer._location;
 
     if (!str) {
-      const hash = history && history._position && history._position.hash;
+      const hash = pdfLoc && pdfLoc.pdfOpenParams;
       a.textContent = [box.scrollLeft, box.scrollTop, hash && "#" + hash.replace(/^#/, "") || null];
       return;
     }
     const mark = str.split(",");
-    const x = ~~mark[0] - box.scrollLeft, y = ~~mark[1] - box.scrollTop
+    const x = ~~mark[0], y = ~~mark[1]
     const hash = (mark.slice(2).join(",") || "").replace(/^#/, "").split("#")[0];
     const dest = hash.includes("page=") ? new URLSearchParams(hash) : null;
     const page = dest && +dest.get("page") || -1;
     if (history && page >= 0) {
       app.pdfLinkService.setHash(hash);
     } else {
-      if (x || y) {
+      const dx = x - box.scrollLeft, dy = y - box.scrollTop
+      if (dx || dy) {
         const zoom = dest ? dest.get("zoom") : "";
         zoom && app.pdfViewer && (app.pdfViewer.currentScaleValue = zoom);
-        box.scrollTo(x, y);
+        box.scrollTo(dx, dy);
       }
       page >= 0 && typeof app.page === "number" && setTimeout(function() {
         if (app.page !== page) {
