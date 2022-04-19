@@ -41,7 +41,9 @@ function isPdfDownloadable(details) {
   // viewer to open the PDF, but first check whether the Content-Disposition
   // header specifies an attachment. This allows sites like Google Drive to
   // operate correctly (#6106).
-  if (details.type === "main_frame" && !details.url.includes("=download")) {
+  if ((details.type === "main_frame" || tabsMaybeInEmbedMode
+        && details.type === "sub_frame" && details.url.endsWith("singleembed=true"))
+      && !details.url.includes("=download")) {
     return false;
   }
   var cdHeader =
@@ -117,6 +119,23 @@ function getHeadersWithContentDispositionAttachment(details) {
   return undefined;
 }
 
+function getHeadersWithoutContentDispositionAttachment(details) {
+  /** @type { {name: string, value?: string}[] } */
+  var headers = details.responseHeaders;
+  var cdHeader = getHeaderFromHeaders(headers, "content-disposition");
+  var ctHeader = getHeaderFromHeaders(headers, "content-type");
+  var mod = false;
+  if (ctHeader && !/\bpdf\b/i.test(ctHeader.value || "")) {
+    ctHeader.value = "application/pdf";
+    mod = true;
+  }
+  if (cdHeader && (!cdHeader.value || /^\s*attachment/i.test(cdHeader.value))) {
+    headers.splice(headers.indexOf(cdHeader), 1);
+    mod = true;
+  }
+  return mod ? { responseHeaders: headers } : undefined;
+}
+
 function onNavigationCommited(details) {
   if (details.frameId !== 0 || !(details.tabId in tabsMaybeInEmbedMode)) {
     return;
@@ -161,7 +180,7 @@ chrome.webRequest.onHeadersReceived.addListener(
     if (tabsMaybeInEmbedMode && details.frameId === 0) {
       saveReferer(details, true);
       tabsMaybeInEmbedMode[details.tabId] = details.url;
-      return undefined;
+      return getHeadersWithoutContentDispositionAttachment(details);
     }
 
     var viewerUrl = getViewerURL(details.url);
