@@ -235,7 +235,7 @@ const PDFViewerApplication = {
 
   // Called once when the document is loaded.
   async initialize(appConfig) {
-    if (this.initialBookmark && /(^|&)singleembed=true(&|$)/.test(this.initialBookmark)) {
+    if (this.initialBookmark && this.isViewerEmbedded && /(^|&)singleembed=true(&|$)/.test(this.initialBookmark)) {
       this.isViewerEmbedded = 0;
     }
     this.preferences = this.externalServices.createPreferences();
