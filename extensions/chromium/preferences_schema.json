@@ -232,7 +232,7 @@
       "title": "Prefer keeping URLs in the address bar unchanged",
       "description": "Experimental: If you can not visit some online PDF files, please try disabling this.",
       "type": "boolean",
-      "default": true
+      "default": false
     }
   }
 }
