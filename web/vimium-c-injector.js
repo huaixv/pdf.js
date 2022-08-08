@@ -81,12 +81,12 @@
 
     if (!str) {
       const hash = pdfLoc && pdfLoc.pdfOpenParams;
-      a.textContent = [box.scrollLeft, box.scrollTop, hash && "#" + hash.replace(/^#/, "") || null];
+      a.textContent = [box.scrollLeft, box.scrollTop, hash && hash.replace(/^#?/, "#").replace(/,/g, ";") || null];
       return;
     }
     const mark = str.split(",");
     const x = ~~mark[0], y = ~~mark[1]
-    const hash = (mark.slice(2).join(",") || "").replace(/^#/, "").split("#")[0];
+    const hash = (mark.slice(2).join(",") || "").replace(/^#/, "").replace(/;/g, ",").split("#")[0];
     const dest = hash.includes("page=") ? new URLSearchParams(hash) : null;
     const page = dest && +dest.get("page") || -1;
     if (history && page >= 0) {
@@ -123,7 +123,7 @@
   }
   var script = document.createElement("script");
   script.src = injectorURL;
-  script.async = true; script.defer = false;
+  script.async = true; script.defer = true;
   script.onload = function () {
     var injector = window.VimiumInjector;
     if (injector && location.pathname.indexOf("://") >= 0) {
@@ -139,10 +139,11 @@
     script.onerror = function () {
       this.remove();
       var script2 = document.createElement("script");
-      script2.src = "chrome-extension://" + IDOnChrome + "/lib/injector.js";
+      script2.src = "chrome-extension://" + (this.src.includes(IDOnChrome) ? IDOnEdge : IDOnChrome) + "/lib/injector.js"
       script2.async = true;
-      script2.defer = false;
+      script2.defer = true;
       script2.onload = this.onload;
+      hasKnown = false;
       document.head.appendChild(script2);
     }
   }
